@@ -54,15 +54,25 @@ public class ThirdPersonMovement : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            speed = 6;
+            speed = 3;
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
         {
-            anim.SetBool("Attack", false);
+            anim.SetBool("Attack 1", false);
           
         }
+        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+        {
+            anim.SetBool("Attack 2", false);
 
+        }
+        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+        {
+            anim.SetBool("Attack 3", false);
+            noOfClicks = 0;
+        }
+     
         if (Time.time - lastClickTime > maxComboDelay)
         {
             noOfClicks = 0;
@@ -87,9 +97,24 @@ public class ThirdPersonMovement : MonoBehaviour
             anim.SetBool("Attack", true);
             
         }
-        
-    
-    
+        noOfClicks = Mathf.Clamp(noOfClicks, 0, 3);
+
+        if (noOfClicks >= 2 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Sword Swing 1"))
+        {
+            anim.SetBool("Attack 1", false);
+            anim.SetBool("Attack 2", true);
+        }
+
+
+        if (noOfClicks >= 3 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Sword Swing 2"))
+        {
+            anim.SetBool("Attack 2", false);
+            anim.SetBool("Attack 3", true);
+        }
+
+
+
+
     }
 
 

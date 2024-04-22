@@ -1395,11 +1395,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3760c5ee8f58704ab410ab669c0359a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anim: {fileID: 0}
+  anim: {fileID: 1249203467}
   controller: {fileID: 1249203465}
   cam: {fileID: 963194228}
-  speed: 6
+  speed: 3
+  cooldownTime: 2
   turnSmoothTime: 0.1
+--- !u!95 &1249203467 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: f98b5dd621915d94787b9a52d8eebe1a, type: 3}
+  m_PrefabInstance: {fileID: 443658216}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1303367833
 GameObject:
   m_ObjectHideFlags: 0
@@ -1500,8 +1506,8 @@ Transform:
   m_GameObject: {fileID: 1303367833}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.5661, y: 0, z: -1.9456}
+  m_LocalScale: {x: 1.8728193, y: 1, z: 1.5771103}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
