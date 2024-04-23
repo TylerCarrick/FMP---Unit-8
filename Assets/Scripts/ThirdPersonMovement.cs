@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.VersionControl.Asset;
+
+
 
 public class ThirdPersonMovement : MonoBehaviour
 {
@@ -13,16 +16,48 @@ public class ThirdPersonMovement : MonoBehaviour
     public static int noOfClicks = 0;
     float lastClickTime = 0;
     float maxComboDelay = 1;
+    public Transform GroundCheck;
+    public LayerMask groundMask;
+    public float gravity = -9.81f;
+    public float groundDistance = 0.4f;
+    public float jumpHeight = 3f;
+    
+
+
+    Vector3 velocity;
+    public bool grounded;
     private void Start()
     {
         anim = GetComponent<Animator>();
-
+    
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        Cursor.visible = false;
     }
     public float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;
     void Update()
     {
+        PlayerWalk();
+        PlayerJumping();
+        PlayerAttack();
+        PlayerIdle();
+        
+       if (grounded == false)
+        {
+            anim.SetBool("Jump", true);
+        }
+        else
+        {
+            anim.SetBool("Jump", false);
+        }
 
+    }
+
+   
+    void PlayerWalk()
+    {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
@@ -41,38 +76,68 @@ public class ThirdPersonMovement : MonoBehaviour
         else
         {
             anim.SetBool("Walk", false);
-            anim.SetBool("Run", false);
+
         }
 
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             speed = 12;
-            anim.SetBool("Run", true);
-            anim.SetBool("Walk", false);
+
+
         }
 
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            speed = 3;
+            speed = 6;
+        }
+    }
+    
+    void PlayerJumping()
+    {
+        grounded = Physics.CheckSphere(GroundCheck.position, groundDistance, groundMask);
+
+        if(grounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+        
+        velocity.y += gravity * Time.deltaTime;
+
+        controller.Move(velocity * Time.deltaTime);
+
+        if(Input.GetButtonDown("Jump") && grounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            
         }
 
-        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+
+    }
+
+    void PlayerIdle()
+    {
+
+    }
+    
+    void PlayerAttack()
+    {
+        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
         {
-            anim.SetBool("Attack 1", false);
-          
-        }
-        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
-        {
-            anim.SetBool("Attack 2", false);
+            anim.SetBool("Attack1", false);
 
         }
-        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack2"))
         {
-            anim.SetBool("Attack 3", false);
+            anim.SetBool("Attack2", false);
+
+        }
+        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))
+        {
+            anim.SetBool("Attack3", false);
             noOfClicks = 0;
         }
-     
+
         if (Time.time - lastClickTime > maxComboDelay)
         {
             noOfClicks = 0;
@@ -87,29 +152,28 @@ public class ThirdPersonMovement : MonoBehaviour
 
         }
     }
-
     void OnClick()
     {
         lastClickTime = Time.time;
         noOfClicks++;
         if (noOfClicks == 1)
         {
-            anim.SetBool("Attack", true);
-            
+            anim.SetBool("Attack1", true);
+
         }
         noOfClicks = Mathf.Clamp(noOfClicks, 0, 3);
 
-        if (noOfClicks >= 2 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Sword Swing 1"))
+        if (noOfClicks >= 2 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
         {
-            anim.SetBool("Attack 1", false);
-            anim.SetBool("Attack 2", true);
+            anim.SetBool("Attack1", false);
+            anim.SetBool("Attack2", true);
         }
 
 
-        if (noOfClicks >= 3 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Sword Swing 2"))
+        if (noOfClicks >= 3 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack2"))
         {
-            anim.SetBool("Attack 2", false);
-            anim.SetBool("Attack 3", true);
+            anim.SetBool("Attack2", false);
+            anim.SetBool("Attack3", true);
         }
 
 
@@ -117,8 +181,21 @@ public class ThirdPersonMovement : MonoBehaviour
 
     }
 
+    void FixedUpdate()
+    {
+        grounded = false;
+    }
 
+    void OnCollisionEnter(Collision col)
+    {
+        if (col.gameObject.tag == "Floor")
+        {
+            grounded = true;
+           
+        }
+    }
 
+   
 
 
 
