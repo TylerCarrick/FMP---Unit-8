@@ -30,10 +30,9 @@ public class ThirdPersonMovement : MonoBehaviour
     {
         anim = GetComponent<Animator>();
     
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
+       // Cursor.visible = true;
+        //Cursor.visible = false;
     }
     public float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;
