@@ -16,7 +16,7 @@ public class EnemyScript : MonoBehaviour
 
     public LayerMask whatIsGround, whatIsPlayer;
 
-    public float health;
+    public float health, maxHealth = 100f;
 
     public Vector3 walkPoint;
     bool walkPointSet;
@@ -28,7 +28,10 @@ public class EnemyScript : MonoBehaviour
 
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange;
-
+    private void Start()
+    {
+        health = maxHealth;
+    }
     private void Awake()
     {
         player = GameObject.Find("Player").transform;
@@ -104,18 +107,18 @@ public class EnemyScript : MonoBehaviour
         alreadyAttacked = false;
     }
     
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damageAmount)
     {
-        health -= damage;
+        health -= damageAmount;
 
-        if (health <= 0) Invoke(nameof(DestroyEnemy), 5f);
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+        }
 
     }
 
-    private void DestroyEnemy()
-    {
-        Destroy(gameObject);
-    }
+    
 }
 
 

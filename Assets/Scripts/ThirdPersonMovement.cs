@@ -21,7 +21,7 @@ public class ThirdPersonMovement : MonoBehaviour
     public float gravity = -9.81f;
     public float groundDistance = 0.4f;
     public float jumpHeight = 3f;
-    
+    public float health, maxHealth = 100f;
 
 
     Vector3 velocity;
@@ -194,7 +194,16 @@ public class ThirdPersonMovement : MonoBehaviour
         }
     }
 
-   
+    public void TakeDamage(float damageAmount)
+    {
+        health -= damageAmount;
+
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+        }
+
+    }
 
 
 

@@ -19,16 +19,21 @@ public class Damage : MonoBehaviour
 
     void SendRaycast()
     {
-        RaycastHit _hitInfo;
-        if(Physics.Raycast(cam.transform.position, cam.transform.forward, out _hitInfo))
+
+    }
+    
+
+    void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.tag != "Player")
         {
-            EnemyScript Unit;
-            _hitInfo.transform.TryGetComponent<EnemyScript>(out Unit);
-            if (Unit != null)
+
+            if (collision.gameObject.TryGetComponent<EnemyScript>(out EnemyScript enemyComponent))
             {
-                Unit.TakeDamage(damage);  
+                enemyComponent.TakeDamage(50);
             }
         }
+        Destroy(gameObject);
     }
 
 
