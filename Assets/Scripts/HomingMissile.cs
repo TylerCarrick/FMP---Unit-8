@@ -16,6 +16,7 @@ public class HomingMissile : MonoBehaviour
 
     public float turn;
     public float rocketVelocity;
+    public int Damage; 
 
 
     private void Start()
@@ -43,7 +44,7 @@ public class HomingMissile : MonoBehaviour
            
            if(collision.gameObject.TryGetComponent<ThirdPersonMovement>(out ThirdPersonMovement playerComponent))
             {
-                playerComponent.TakeDamage(50);
+                playerComponent.TakeDamage(Damage);
             }
         }
        Destroy(gameObject);

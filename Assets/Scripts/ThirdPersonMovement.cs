@@ -21,15 +21,17 @@ public class ThirdPersonMovement : MonoBehaviour
     public float gravity = -9.81f;
     public float groundDistance = 0.4f;
     public float jumpHeight = 3f;
-    public float health, maxHealth = 100f;
-
-
+    public int health;
+    public int maxHealth = 100;
+    public Healthbar healthbar;
     Vector3 velocity;
     public bool grounded;
     private void Start()
     {
         anim = GetComponent<Animator>();
-    
+        health = maxHealth;
+        healthbar.SetMaxHealth(maxHealth);
+       
         //Cursor.lockState = CursorLockMode.Locked;
        // Cursor.visible = true;
         //Cursor.visible = false;
@@ -194,10 +196,11 @@ public class ThirdPersonMovement : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float damageAmount)
+    public void TakeDamage(int damageAmount)
     {
         health -= damageAmount;
 
+        healthbar.SetHealth(health);
         if (health <= 0)
         {
             Destroy(gameObject);

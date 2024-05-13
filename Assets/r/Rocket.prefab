@@ -157,3 +157,4 @@ MonoBehaviour:
   player: {fileID: 0}
   turn: 4
   rocketVelocity: 20
+  Damage: 20
