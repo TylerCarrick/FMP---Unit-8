@@ -32,9 +32,7 @@ public class ThirdPersonMovement : MonoBehaviour
         health = maxHealth;
         healthbar.SetMaxHealth(maxHealth);
        
-        //Cursor.lockState = CursorLockMode.Locked;
-       // Cursor.visible = true;
-        //Cursor.visible = false;
+       
     }
     public float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;

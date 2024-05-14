@@ -16,7 +16,8 @@ public class EnemyScript : MonoBehaviour
 
     public LayerMask whatIsGround, whatIsPlayer;
 
-    public float health, maxHealth = 100f;
+    public int health;
+    public int maxHealth = 100;
 
     public Vector3 walkPoint;
     bool walkPointSet;
@@ -46,6 +47,11 @@ public class EnemyScript : MonoBehaviour
         if (!playerInSightRange && !playerInAttackRange) Patrolling();
         if (playerInSightRange && !playerInAttackRange) ChasePlayer();
         if (playerInAttackRange && playerInSightRange) AttackPlayer();
+
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Patrolling()
@@ -59,6 +65,7 @@ public class EnemyScript : MonoBehaviour
 
         if (distanceToWalkPoint.magnitude < 1f)
             walkPointSet = false;
+        anim.SetBool("idle", false);
     }
 
     private void SearchWalkPoint()
@@ -74,6 +81,7 @@ public class EnemyScript : MonoBehaviour
     private void ChasePlayer()
     {
         agent.SetDestination(player.position);
+        anim.SetBool("idle", false);
     }
 
     private void AttackPlayer()
@@ -83,6 +91,8 @@ public class EnemyScript : MonoBehaviour
         transform.LookAt(player);
 
         anim.SetBool("idle", true);
+        
+
 
 
 
@@ -107,9 +117,9 @@ public class EnemyScript : MonoBehaviour
         alreadyAttacked = false;
     }
     
-    public void TakeDamage(float damageAmount)
+    public void takeDamage(int damageAmount)
     {
-        health -= damageAmount;
+        health = maxHealth + damageAmount;
 
         if (health <= 0)
         {

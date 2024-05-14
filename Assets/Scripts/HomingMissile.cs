@@ -39,7 +39,7 @@ public class HomingMissile : MonoBehaviour
 
     void OnTriggerEnter(Collider collision)
     {
-        if (collision.gameObject.tag != "Enemy")
+         if (collision.gameObject.tag != "Enemy")
         {
            
            if(collision.gameObject.TryGetComponent<ThirdPersonMovement>(out ThirdPersonMovement playerComponent))

@@ -4,36 +4,31 @@ using UnityEngine;
 
 public class Damage : MonoBehaviour
 {
-    public Camera cam;
+
 
     public int damage;
+    
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            SendRaycast();
-        }
+       
     }
 
-    void SendRaycast()
-    {
-
-    }
+    
     
 
     void OnTriggerEnter(Collider collision)
     {
-        if (collision.gameObject.tag != "Player")
+        print(collision.name + "Damagascripthit this");
+        if (collision.gameObject.tag == "Enemy")
         {
+            EnemyScript ES = collision.GetComponent<EnemyScript>();
 
-            if (collision.gameObject.TryGetComponent<EnemyScript>(out EnemyScript enemyComponent))
-            {
-                enemyComponent.TakeDamage(50);
-            }
+            ES.health -= 100;
+
         }
-        Destroy(gameObject);
+        
     }
 
 
