@@ -25,7 +25,7 @@ public class Damage : MonoBehaviour
         {
             EnemyScript ES = collision.GetComponent<EnemyScript>();
 
-            ES.health -= 100;
+            ES.health -= 20;
 
         }
         

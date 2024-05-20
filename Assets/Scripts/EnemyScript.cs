@@ -17,7 +17,7 @@ public class EnemyScript : MonoBehaviour
     public LayerMask whatIsGround, whatIsPlayer;
 
     public int health;
-    public int maxHealth = 100;
+    public int maxHealth = 300;
 
     public Vector3 walkPoint;
     bool walkPointSet;
@@ -29,6 +29,8 @@ public class EnemyScript : MonoBehaviour
 
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange;
+
+   public bool isDead = false;
     private void Start()
     {
         health = maxHealth;
@@ -41,74 +43,93 @@ public class EnemyScript : MonoBehaviour
 
     private void Update()
     {
-        playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
-        playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
+        if (isDead == false)
+        {
+            playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
+            playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
 
-        if (!playerInSightRange && !playerInAttackRange) Patrolling();
-        if (playerInSightRange && !playerInAttackRange) ChasePlayer();
-        if (playerInAttackRange && playerInSightRange) AttackPlayer();
+            if (!playerInSightRange && !playerInAttackRange) Patrolling();
+            if (playerInSightRange && !playerInAttackRange) ChasePlayer();
+            if (playerInAttackRange && playerInSightRange) AttackPlayer();
+
+            
+        }
 
         if (health <= 0)
         {
-            Destroy(gameObject);
+            isDead = true;
+            anim.SetBool("dead", true);
+
         }
     }
 
     private void Patrolling()
     {
-        if (!walkPointSet) SearchWalkPoint();
+        if (isDead == false)
+        {
+            if (!walkPointSet) SearchWalkPoint();
 
-        if(walkPointSet)
-            agent.SetDestination(walkPoint);
+            if (walkPointSet)
+                agent.SetDestination(walkPoint);
 
-        Vector3 distanceToWalkPoint = transform.position - walkPoint;
+            Vector3 distanceToWalkPoint = transform.position - walkPoint;
 
-        if (distanceToWalkPoint.magnitude < 1f)
-            walkPointSet = false;
-        anim.SetBool("idle", false);
+            if (distanceToWalkPoint.magnitude < 1f)
+                walkPointSet = false;
+            anim.SetBool("idle", false);
+        }
     }
 
     private void SearchWalkPoint()
     {
-        float randomZ = Random.Range(-walkPointRange, walkPointRange);
-        float randomX = Random.Range(-walkPointRange, walkPointRange);
+        if (isDead == false)
+        {
+            float randomZ = Random.Range(-walkPointRange, walkPointRange);
+            float randomX = Random.Range(-walkPointRange, walkPointRange);
 
-        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ );
+            walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
 
-        if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround))
-            walkPointSet = true;
+            if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround))
+                walkPointSet = true;
+        }
     }
     private void ChasePlayer()
     {
-        agent.SetDestination(player.position);
-        anim.SetBool("idle", false);
+        if (isDead == false)
+        {
+            agent.SetDestination(player.position);
+            anim.SetBool("idle", false);
+        }
     }
 
     private void AttackPlayer()
     {
-        agent.SetDestination(transform.position);
-
-        transform.LookAt(player);
-
-        anim.SetBool("idle", true);
-        
-
-
-
-
-
-        if (!alreadyAttacked)
+        if (isDead == false)
         {
-            Rigidbody rb = Instantiate(projectile, pos.transform.position, Quaternion.identity).GetComponent<Rigidbody>();
-            rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
-            rb.AddForce(transform.up * 8f, ForceMode.Impulse);
+            agent.SetDestination(transform.position);
 
-            
+            transform.LookAt(player);
+
+            anim.SetBool("idle", true);
 
 
 
-            alreadyAttacked = true;
-            Invoke(nameof(ResetAttack), timeBetweenAttacks);
+
+
+
+            if (!alreadyAttacked)
+            {
+                Rigidbody rb = Instantiate(projectile, pos.transform.position, Quaternion.identity).GetComponent<Rigidbody>();
+                rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
+                rb.AddForce(transform.up * 8f, ForceMode.Impulse);
+
+
+
+
+
+                alreadyAttacked = true;
+                Invoke(nameof(ResetAttack), timeBetweenAttacks);
+            }
         }
     }
     
@@ -116,16 +137,14 @@ public class EnemyScript : MonoBehaviour
     {
         alreadyAttacked = false;
     }
-    
+
     public void takeDamage(int damageAmount)
     {
         health = maxHealth + damageAmount;
+        
+            
 
-        if (health <= 0)
-        {
-            Destroy(gameObject);
-        }
-
+        
     }
 
     

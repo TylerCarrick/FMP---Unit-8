@@ -26,6 +26,7 @@ public class ThirdPersonMovement : MonoBehaviour
     public Healthbar healthbar;
     Vector3 velocity;
     public bool grounded;
+    public bool IsDead = false;
     private void Start()
     {
         anim = GetComponent<Animator>();
@@ -51,66 +52,76 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             anim.SetBool("Jump", false);
         }
+        if (health <= 0)
+        {
+            IsDead = true;
+            anim.SetBool("Death", true);
 
+        }
     }
 
    
     void PlayerWalk()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
-
-        if (direction.magnitude >= 0.1f)
+        if (IsDead == false)
         {
-            float targetangle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetangle, ref turnSmoothVelocity, turnSmoothTime);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
+            float horizontal = Input.GetAxisRaw("Horizontal");
+            float vertical = Input.GetAxisRaw("Vertical");
+            Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
 
-            Vector3 moveDir = Quaternion.Euler(0f, targetangle, 0f) * Vector3.forward;
-            controller.Move(moveDir.normalized * speed * Time.deltaTime);
-            anim.SetBool("Walk", true);
+            if (direction.magnitude >= 0.1f)
+            {
+                float targetangle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
+                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetangle, ref turnSmoothVelocity, turnSmoothTime);
+                transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
-        }
-        else
-        {
-            anim.SetBool("Walk", false);
+                Vector3 moveDir = Quaternion.Euler(0f, targetangle, 0f) * Vector3.forward;
+                controller.Move(moveDir.normalized * speed * Time.deltaTime);
+                anim.SetBool("Walk", true);
 
-        }
+            }
+            else
+            {
+                anim.SetBool("Walk", false);
+
+            }
 
 
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            speed = 12;
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                speed = 12;
 
 
-        }
+            }
 
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            speed = 6;
+            if (Input.GetKeyUp(KeyCode.LeftShift))
+            {
+                speed = 6;
+            }
         }
     }
     
     void PlayerJumping()
     {
-        grounded = Physics.CheckSphere(GroundCheck.position, groundDistance, groundMask);
-
-        if(grounded && velocity.y < 0)
+        if (IsDead == false)
         {
-            velocity.y = -2f;
+            grounded = Physics.CheckSphere(GroundCheck.position, groundDistance, groundMask);
+
+            if (grounded && velocity.y < 0)
+            {
+                velocity.y = -2f;
+            }
+
+            velocity.y += gravity * Time.deltaTime;
+
+            controller.Move(velocity * Time.deltaTime);
+
+            if (Input.GetButtonDown("Jump") && grounded)
+            {
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+
+            }
         }
-        
-        velocity.y += gravity * Time.deltaTime;
-
-        controller.Move(velocity * Time.deltaTime);
-
-        if(Input.GetButtonDown("Jump") && grounded)
-        {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-            
-        }
-
 
     }
 
@@ -121,7 +132,8 @@ public class ThirdPersonMovement : MonoBehaviour
     
     void PlayerAttack()
     {
-        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
+        if (IsDead == false) { 
+            if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
         {
             anim.SetBool("Attack1", false);
 
@@ -141,56 +153,64 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             noOfClicks = 0;
         }
-        if (Time.time > nextFireTime)
-        {
-            if (Input.GetMouseButtonDown(0))
+            if (Time.time > nextFireTime)
             {
-                OnClick();
+                if (Input.GetMouseButtonDown(0))
+                {
+                    OnClick();
+                }
+
             }
-
-
         }
     }
     void OnClick()
     {
-        lastClickTime = Time.time;
-        noOfClicks++;
-        if (noOfClicks == 1)
+        if (IsDead == false)
         {
-            anim.SetBool("Attack1", true);
+            lastClickTime = Time.time;
+            noOfClicks++;
+            if (noOfClicks == 1)
+            {
+                anim.SetBool("Attack1", true);
+
+            }
+            noOfClicks = Mathf.Clamp(noOfClicks, 0, 3);
+
+            if (noOfClicks >= 2 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
+            {
+                anim.SetBool("Attack1", false);
+                anim.SetBool("Attack2", true);
+            }
+
+
+            if (noOfClicks >= 3 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack2"))
+            {
+                anim.SetBool("Attack2", false);
+                anim.SetBool("Attack3", true);
+            }
 
         }
-        noOfClicks = Mathf.Clamp(noOfClicks, 0, 3);
-
-        if (noOfClicks >= 2 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
-        {
-            anim.SetBool("Attack1", false);
-            anim.SetBool("Attack2", true);
-        }
-
-
-        if (noOfClicks >= 3 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("Attack2"))
-        {
-            anim.SetBool("Attack2", false);
-            anim.SetBool("Attack3", true);
-        }
-
-
 
 
     }
 
     void FixedUpdate()
     {
-        grounded = false;
+        if (IsDead == false)
+        {
+            grounded = false;
+        }
     }
 
     void OnCollisionEnter(Collision col)
     {
-        if (col.gameObject.tag == "Floor")
+        if (IsDead == false)
         {
-            grounded = true;
-           
+            if (col.gameObject.tag == "Floor")
+            {
+                grounded = true;
+
+            }
         }
     }
 
@@ -199,10 +219,7 @@ public class ThirdPersonMovement : MonoBehaviour
         health -= damageAmount;
 
         healthbar.SetHealth(health);
-        if (health <= 0)
-        {
-            Destroy(gameObject);
-        }
+       
 
     }
 
