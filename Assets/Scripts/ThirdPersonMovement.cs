@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.VersionControl.Asset;
+
 
 
 
 public class ThirdPersonMovement : MonoBehaviour
 {
+    [SerializeField] private GameObject GameOver;
+    
+
+    
     public Animator anim;
     public CharacterController controller;
     public Transform cam;
@@ -56,6 +60,8 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             IsDead = true;
             anim.SetBool("Death", true);
+            GameOver.SetActive(true);
+            
 
         }
     }
