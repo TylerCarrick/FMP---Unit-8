@@ -5,9 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class BackScript : MonoBehaviour
 {
-    public void Menu()
+    public void Quit()
     {
-        Debug.Log("QUIT");
-        Application.Quit();
+        SceneManager.LoadScene(0);
+
     }
 }
