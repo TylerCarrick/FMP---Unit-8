@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -6,6 +7,8 @@ using UnityEngine.AI;
 
 public class EnemyScript : MonoBehaviour
 {
+    [SerializeField] private GameObject Winner;
+    
     public Transform pos;
     
     public Animator anim;
@@ -37,8 +40,10 @@ public class EnemyScript : MonoBehaviour
     }
     private void Awake()
     {
+        
         player = GameObject.Find("Player").transform;
         agent = GetComponent<NavMeshAgent>();
+        
     }
 
     private void Update()
@@ -54,15 +59,19 @@ public class EnemyScript : MonoBehaviour
 
             
         }
-
+       
         if (health <= 0)
         {
             isDead = true;
             anim.SetBool("dead", true);
+            
+            Winner.SetActive(true);
 
         }
     }
-
+    
+    
+    
     private void Patrolling()
     {
         if (isDead == false)

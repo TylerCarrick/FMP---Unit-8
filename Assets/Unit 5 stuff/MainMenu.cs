@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class MainMenu : MonoBehaviour
 {
-  [SerializeField] GameObject gameObject;
+  [SerializeField] GameObject component;
    public void PlayGame()
     {
-        SceneManager.LoadScene(1);
-       DontDestroyOnLoad(gameObject);  
-        gameObject.SetActive(false);
+       SceneManager.LoadScene(1);
+       DontDestroyOnLoad(component);  
+       gameObject.SetActive(false);
     }
     
     public void QuitGame ()
